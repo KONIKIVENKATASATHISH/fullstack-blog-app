@@ -16,16 +16,28 @@
     <script>
         const blogId = new URLSearchParams(window.location.search).get("id");
 
-        fetch(`http://localhost:5000/api/blogs/${blogId}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("title").innerText = data.title;
-                document.getElementById("author").innerText = "Author: " + data.author;
-                document.getElementById("content").innerText = data.content;
-            })
-            .catch(error => {
-                document.getElementById("title").innerText = "Blog not found";
-            });
+        if (!blogId) {
+            document.getElementById("title").innerText = "Blog ID not found";
+        } else {
+
+            fetch(`http://localhost:5000/api/blogs/${blogId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Blog not found");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("title").innerText = data.title;
+                    document.getElementById("author").innerText =
+                        "Author: " + data.author;
+                    document.getElementById("content").innerText =
+                        data.content;
+                })
+                .catch(error => {
+                    document.getElementById("title").innerText = "Blog not found";
+                });
+        }
     </script>
 
 </body>

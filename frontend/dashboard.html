@@ -6,6 +6,7 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
 <nav>
@@ -18,7 +19,9 @@
     </ul>
 </nav>
 
-<section class="blogs" id="blogs"></section>
+<section class="blogs" id="blogs">
+    <p>Loading blogs...</p>
+</section>
 
 <script>
     fetch("http://localhost:5000/api/blogs")
@@ -26,6 +29,8 @@
         .then(blogs => {
 
             const blogsContainer = document.getElementById("blogs");
+
+            blogsContainer.innerHTML = "";
 
             blogs.forEach(blog => {
 
@@ -45,6 +50,8 @@
         })
         .catch(error => {
             console.log("Error:", error);
+            document.getElementById("blogs").innerHTML =
+                "<p>Failed to load blogs.</p>";
         });
 </script>
 
