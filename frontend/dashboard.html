@@ -24,35 +24,82 @@
 </section>
 
 <script>
-    fetch("http://localhost:5000/api/blogs")
-        .then(response => response.json())
-        .then(blogs => {
 
-            const blogsContainer = document.getElementById("blogs");
+fetch("http://localhost:5000/api/blogs")
+    .then(response => response.json())
+    .then(blogs => {
 
-            blogsContainer.innerHTML = "";
+        const blogsContainer = document.getElementById("blogs");
 
-            blogs.forEach(blog => {
+        blogsContainer.innerHTML = "";
 
-                const card = document.createElement("div");
-                card.className = "card";
+        blogs.forEach(blog => {
 
-                card.innerHTML = `
-                    <h3>${blog.title}</h3>
-                    <p>${blog.content}</p>
-                    <p>Author: ${blog.author}</p>
-                    <a href="blog.html?id=${blog.id}">Read More</a>
-                `;
+            const card = document.createElement("div");
+            card.className = "card";
 
-                blogsContainer.appendChild(card);
-            });
+            card.innerHTML = `
+                <h3>${blog.title}</h3>
+                <p>${blog.content}</p>
+                <p>Author: ${blog.author}</p>
 
-        })
-        .catch(error => {
-            console.log("Error:", error);
-            document.getElementById("blogs").innerHTML =
-                "<p>Failed to load blogs.</p>";
+                <a href="blog.html?id=${blog.id}">Read More</a>
+
+                <button onclick="editBlog('${blog.id}')">
+                    Edit
+                </button>
+
+                <button onclick="deleteBlog('${blog.id}')">
+                    Delete
+                </button>
+            `;
+
+            blogsContainer.appendChild(card);
         });
+
+    })
+    .catch(error => {
+
+        console.log("Error:", error);
+
+        document.getElementById("blogs").innerHTML =
+            "<p>Failed to load blogs.</p>";
+
+    });
+
+
+function editBlog(id) {
+
+    window.location.href = `create-blog.html?id=${id}`;
+
+}
+
+
+function deleteBlog(id) {
+
+    if (!confirm("Are you sure you want to delete this blog?")) {
+        return;
+    }
+
+    fetch(`http://localhost:5000/api/blogs/${id}`, {
+        method: "DELETE"
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        alert(data.message);
+
+        location.reload();
+
+    })
+    .catch(error => {
+
+        console.log("Error:", error);
+
+    });
+
+}
+
 </script>
 
 </body>

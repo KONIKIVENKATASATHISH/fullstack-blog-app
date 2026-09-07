@@ -24,28 +24,80 @@
 
 </div>
 <script>
-document.getElementById("blogForm").addEventListener("submit", async function(event) {
+
+const blogId = new URLSearchParams(window.location.search).get("id");
+
+const form = document.getElementById("blogForm");
+const titleInput = document.getElementById("title");
+const contentInput = document.getElementById("content");
+
+
+// If editing an existing blog
+if (blogId) {
+
+    document.querySelector("h2").innerText = "Edit Blog";
+    document.querySelector("button").innerText = "Update Blog";
+
+    fetch(`http://localhost:5000/api/blogs/${blogId}`)
+        .then(response => response.json())
+        .then(blog => {
+
+            titleInput.value = blog.title;
+            contentInput.value = blog.content;
+
+        });
+}
+
+
+// Create or Update Blog
+form.addEventListener("submit", async function(event) {
+
     event.preventDefault();
 
-    const title = document.getElementById("title").value;
-    const content = document.getElementById("content").value;
+    const title = titleInput.value;
+    const content = contentInput.value;
 
-    const response = await fetch("http://localhost:5000/api/blogs/create", {
-        method: "POST",
+    let url;
+    let method;
+
+    if (blogId) {
+
+        // Update
+        url = `http://localhost:5000/api/blogs/${blogId}`;
+        method = "PUT";
+
+    } else {
+
+        // Create
+        url = "http://localhost:5000/api/blogs/create";
+        method = "POST";
+
+    }
+
+    const response = await fetch(url, {
+
+        method: method,
+
         headers: {
             "Content-Type": "application/json"
         },
+
         body: JSON.stringify({
             title: title,
             content: content,
-            author: "Sathesh"
+            author: "Mishu"
         })
+
     });
 
     const data = await response.json();
 
     alert(data.message);
+
+    window.location.href = "dashboard.html";
+
 });
+
 </script>
 
 </body>
