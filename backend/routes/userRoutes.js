@@ -1,31 +1,37 @@
 const express = require("express");
+const User = require("../models/User");
 
 const router = express.Router();
 
-let users = [];
+// Register
+router.post("/register", async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
 
-// User Registration
-router.post("/register", (req, res) => {
-    const { name, email, password } = req.body;
+        const user = new User({
+            name,
+            email,
+            password
+        });
 
-    users.push({
-        name,
-        email,
-        password
-    });
+        await user.save();
 
-    res.json({
-        message: "User registered successfully"
-    });
+        res.json({
+            message: "User registered successfully"
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Registration failed"
+        });
+    }
 });
 
-// User Login
-router.post("/login", (req, res) => {
+// Login
+router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
-    const user = users.find(
-        u => u.email === email && u.password === password
-    );
+    const user = await User.findOne({ email, password });
 
     if (user) {
         res.json({

@@ -18,24 +18,35 @@
     </ul>
 </nav>
 
-<section class="blogs">
+<section class="blogs" id="blogs"></section>
 
-    <div class="card">
-        <h3>My First Blog</h3>
-        <p>This is a sample blog post.</p>
-    </div>
+<script>
+    fetch("http://localhost:5000/api/blogs")
+        .then(response => response.json())
+        .then(blogs => {
 
-    <div class="card">
-        <h3>Web Development</h3>
-        <p>Learning HTML, CSS and JavaScript.</p>
-    </div>
+            const blogsContainer = document.getElementById("blogs");
 
-    <div class="card">
-        <h3>AI Trends</h3>
-        <p>Latest innovations in Artificial Intelligence.</p>
-    </div>
+            blogs.forEach(blog => {
 
-</section>
+                const card = document.createElement("div");
+                card.className = "card";
+
+                card.innerHTML = `
+                    <h3>${blog.title}</h3>
+                    <p>${blog.content}</p>
+                    <p>Author: ${blog.author}</p>
+                    <a href="blog.html?id=${blog.id}">Read More</a>
+                `;
+
+                blogsContainer.appendChild(card);
+            });
+
+        })
+        .catch(error => {
+            console.log("Error:", error);
+        });
+</script>
 
 </body>
 </html>
