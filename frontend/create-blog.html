@@ -12,17 +12,41 @@
 
     <h2>Create Blog</h2>
 
-    <form>
-        <input type="text" placeholder="Blog Title" required>
+    <form id="blogForm">
+    <input type="text" id="title" placeholder="Blog Title" required>
 
-        <textarea placeholder="Write your blog here..."
-        rows="6"
-        style="width:100%;padding:10px;margin-bottom:15px;"></textarea>
+    <textarea id="content" placeholder="Write your blog here..."
+    rows="6"
+    style="width:100%;padding:10px;margin-bottom:15px;"></textarea>
 
-        <button type="submit">Publish Blog</button>
-    </form>
+    <button type="submit">Publish Blog</button>
+</form>
 
 </div>
+<script>
+document.getElementById("blogForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const title = document.getElementById("title").value;
+    const content = document.getElementById("content").value;
+
+    const response = await fetch("http://localhost:5000/api/blogs/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            title: title,
+            content: content,
+            author: "Sathesh"
+        })
+    });
+
+    const data = await response.json();
+
+    alert(data.message);
+});
+</script>
 
 </body>
 </html>
