@@ -103,7 +103,7 @@ try {
 
 
 // Get logged-in user's blogs
-fetch("http://localhost:5000/api/blogs", {
+fetch("https://fullstack-blog-app-qj7a.onrender.com/api/blogs", {
 
     headers: {
 
@@ -219,7 +219,7 @@ function deleteBlog(id) {
     }
 
 
-    fetch(`http://localhost:5000/api/blogs/${id}`, {
+    fetch(`https://fullstack-blog-app-qj7a.onrender.com/api/blogs/${id}`, {
 
         method: "DELETE",
 

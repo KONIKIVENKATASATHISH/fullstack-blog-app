@@ -80,7 +80,7 @@ if (blogId) {
         "Update Blog";
 
 
-    fetch(`http://localhost:5000/api/blogs/${blogId}`)
+    fetch(`https://fullstack-blog-app-qj7a.onrender.com/api/blogs/${blogId}`)
 
         .then(response => response.json())
 
@@ -114,14 +114,14 @@ form.addEventListener("submit", async function(event) {
     if (blogId) {
 
         url =
-            `http://localhost:5000/api/blogs/${blogId}`;
+            `https://fullstack-blog-app-qj7a.onrender.com/api/blogs/${blogId}`;
 
         method = "PUT";
 
     } else {
 
         url =
-            "http://localhost:5000/api/blogs/create";
+            "https://fullstack-blog-app-qj7a.onrender.com/api/blogs/create";
 
         method = "POST";
 

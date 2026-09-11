@@ -20,7 +20,7 @@
             document.getElementById("title").innerText = "Blog ID not found";
         } else {
 
-            fetch(`http://localhost:5000/api/blogs/${blogId}`)
+            fetch(`https://fullstack-blog-app-qj7a.onrender.com/api/blogs/${blogId}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("Blog not found");
