@@ -1,17 +1,19 @@
 const express = require("express");
 const Blog = require("../models/Blog");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 // Create Blog
-router.post("/create", async (req, res) => {
+router.post("/create", authMiddleware, async (req, res) => {
     try {
-        const { title, content, author } = req.body;
+        const { title, content } = req.body;
 
         const blog = new Blog({
             title,
             content,
-            author
+            author: req.user.name,
+            userId: req.user.id
         });
 
         await blog.save();
@@ -28,10 +30,13 @@ router.post("/create", async (req, res) => {
     }
 });
 
-// Get All Blogs
-router.get("/", async (req, res) => {
+
+// Get Only Logged-in User's Blogs
+router.get("/", authMiddleware, async (req, res) => {
     try {
-        const blogs = await Blog.find();
+        const blogs = await Blog.find({
+            userId: req.user.id
+        });
 
         const formattedBlogs = blogs.map(blog => ({
             id: blog._id,
@@ -48,6 +53,7 @@ router.get("/", async (req, res) => {
         });
     }
 });
+
 
 // Get Single Blog
 router.get("/:id", async (req, res) => {
@@ -68,20 +74,31 @@ router.get("/:id", async (req, res) => {
         });
     }
 });
-// Update Blog
-router.put("/:id", async (req, res) => {
-    try {
-        const { title, content, author } = req.body;
 
-        const blog = await Blog.findByIdAndUpdate(
-            req.params.id,
-            { title, content, author },
-            { new: true }
+
+// Update Blog
+router.put("/:id", authMiddleware, async (req, res) => {
+    try {
+        const { title, content } = req.body;
+
+        const blog = await Blog.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                userId: req.user.id
+            },
+            {
+                title,
+                content,
+                author: req.user.name
+            },
+            {
+                new: true
+            }
         );
 
         if (!blog) {
             return res.status(404).json({
-                message: "Blog not found"
+                message: "Blog not found or access denied"
             });
         }
 
@@ -96,14 +113,19 @@ router.put("/:id", async (req, res) => {
         });
     }
 });
+
+
 // Delete Blog
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
     try {
-        const blog = await Blog.findByIdAndDelete(req.params.id);
+        const blog = await Blog.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.user.id
+        });
 
         if (!blog) {
             return res.status(404).json({
-                message: "Blog not found"
+                message: "Blog not found or access denied"
             });
         }
 
@@ -117,5 +139,6 @@ router.delete("/:id", async (req, res) => {
         });
     }
 });
+
 
 module.exports = router;

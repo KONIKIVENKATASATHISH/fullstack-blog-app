@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Create Blog</title>
+
     <link rel="stylesheet" href="css/style.css">
 </head>
+
+
 <body>
 
 <div class="form-container">
@@ -13,92 +18,170 @@
     <h2>Create Blog</h2>
 
     <form id="blogForm">
-    <input type="text" id="title" placeholder="Blog Title" required>
 
-    <textarea id="content" placeholder="Write your blog here..."
-    rows="6"
-    style="width:100%;padding:10px;margin-bottom:15px;"></textarea>
+        <input
+            type="text"
+            id="title"
+            placeholder="Blog Title"
+            required
+        >
 
-    <button type="submit">Publish Blog</button>
-</form>
+        <textarea
+            id="content"
+            placeholder="Write your blog here..."
+            rows="6"
+            style="width:100%;padding:10px;margin-bottom:15px;"
+            required
+        ></textarea>
+
+        <button type="submit">
+            Publish Blog
+        </button>
+
+    </form>
 
 </div>
+
+
 <script>
 
-const blogId = new URLSearchParams(window.location.search).get("id");
-
-const form = document.getElementById("blogForm");
-const titleInput = document.getElementById("title");
-const contentInput = document.getElementById("content");
+const token = localStorage.getItem("token");
 
 
-// If editing an existing blog
-if (blogId) {
+// Protect page
+if (!token) {
 
-    document.querySelector("h2").innerText = "Edit Blog";
-    document.querySelector("button").innerText = "Update Blog";
+    window.location.href = "login.html";
 
-    fetch(`http://localhost:5000/api/blogs/${blogId}`)
-        .then(response => response.json())
-        .then(blog => {
-
-            titleInput.value = blog.title;
-            contentInput.value = blog.content;
-
-        });
 }
 
 
-// Create or Update Blog
+const blogId =
+    new URLSearchParams(window.location.search).get("id");
+
+
+const form =
+    document.getElementById("blogForm");
+
+const titleInput =
+    document.getElementById("title");
+
+const contentInput =
+    document.getElementById("content");
+
+
+// Edit existing blog
+if (blogId) {
+
+    document.querySelector("h2").innerText =
+        "Edit Blog";
+
+    document.querySelector("button").innerText =
+        "Update Blog";
+
+
+    fetch(`http://localhost:5000/api/blogs/${blogId}`)
+
+        .then(response => response.json())
+
+        .then(blog => {
+
+            titleInput.value = blog.title;
+
+            contentInput.value = blog.content;
+
+        });
+
+}
+
+
+// Create or Update
 form.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
+
     const title = titleInput.value;
+
     const content = contentInput.value;
 
+
     let url;
+
     let method;
+
 
     if (blogId) {
 
-        // Update
-        url = `http://localhost:5000/api/blogs/${blogId}`;
+        url =
+            `http://localhost:5000/api/blogs/${blogId}`;
+
         method = "PUT";
 
     } else {
 
-        // Create
-        url = "http://localhost:5000/api/blogs/create";
+        url =
+            "http://localhost:5000/api/blogs/create";
+
         method = "POST";
 
     }
 
-    const response = await fetch(url, {
 
-        method: method,
+    try {
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+        const response = await fetch(url, {
 
-        body: JSON.stringify({
-            title: title,
-            content: content,
-            author: "Mishu"
-        })
+            method: method,
 
-    });
+            headers: {
 
-    const data = await response.json();
+                "Content-Type": "application/json",
 
-    alert(data.message);
+                "Authorization": `Bearer ${token}`
 
-    window.location.href = "dashboard.html";
+            },
+
+            body: JSON.stringify({
+
+                title: title,
+
+                content: content
+
+            })
+
+        });
+
+
+        const data = await response.json();
+
+
+        if (response.ok) {
+
+            alert(data.message);
+
+            window.location.href =
+                "dashboard.html";
+
+        } else {
+
+            alert(data.message);
+
+        }
+
+
+    } catch (error) {
+
+        console.log("Error:", error);
+
+        alert("Unable to connect to server");
+
+    }
 
 });
 
 </script>
 
 </body>
+
 </html>
